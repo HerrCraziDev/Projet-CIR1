@@ -1,0 +1,37 @@
+#ifndef _INTERFACE_INC_
+#define _INTERFACE_INC_
+
+
+#ifndef _STD_INC_
+#define _STD_INC_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+
+#endif //_STD_INC_
+
+#include <SDL/SDL.h>
+#include "func.h"
+
+#define GUI_TILESIZE 10
+
+typedef struct GUI_Component{
+    int width;
+    int height;
+    SDL_Surface *internal;
+}GUI_Component;
+
+GUI_Component *initGUI(Map *map);                                       //Initialise l'environnement graphique
+SDL_Surface *OpenWindow(int width,int height, char *title, int flags);  //Ouvre une fenêtre standard de type standard
+
+void DrawTile(SDL_Surface *output, int x, int y, char type);            //Affiche une case
+void DrawMap(GUI_Component *output, Map *map);                          //Dessine toute la map
+void DrawRobot(GUI_Component *window, Robot *robot);                    //Affiche le robot
+void ClearRobot(GUI_Component *window, Robot *robot);                   //Efface le robot
+void RenderGUI(GUI_Component *output);                                  //Affiche les opérations de dessin précédentes
+
+int ManageEvents(GUI_Component *window);                                //Gére les événements de l'environnement graphique
+void FreeGUI(GUI_Component *window);                                    //Est censé libérer l'environnement graphique mais fait une fuite de 1.4Mo
+#endif //_INTERFACE_INC_
