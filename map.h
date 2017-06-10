@@ -4,6 +4,7 @@
 
 #ifndef _STD_INC_
 #define _STD_INC_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -15,9 +16,10 @@
 
 
 /* Fonctions de gestion de la map */
-Map *LoadMap(const char *file);         //Charge la map a partir d'un fichier
+Map *LoadMap(const char *file);  //Charge la map a partir d'un fichier
 void PrintMap(Map *map);         //Affiche la map (terminal)
 
-void sfrMap(char **map, int size);
-void FreeMap(Map *map);
+void sfrMap(char **map, int size);  //Libére la map (tableau de char*)
+void FreeMap(Map *map);             //Libére toute la structure Map
+
 #endif //_MAP_INC_

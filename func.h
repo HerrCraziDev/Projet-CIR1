@@ -4,6 +4,7 @@
 
 #ifndef _STD_INC_
 #define _STD_INC_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -36,18 +37,18 @@
 #define BK_WHITE "47"
 /*********************************************/
 
-//Fonctions utils de terminal
+//Fonctions utiles pour l'affichage sur terminal non graphique
 #define RestoreCursorPosition() printf("\033[u")
 #define SaveCursorPosition() printf("\033[s")
 #define MoveCursorTo(x,y) printf("\033[%d;%dH", y+1, x+1)
 
-typedef struct MapPoint{
-    int x;
-    int y;
+typedef struct MapPoint{//Point 2D
+    int x;          //Coord. x
+    int y;          //Coord. y
 }MapPoint;
 
 
-typedef struct Robot{
+typedef struct Robot{//Robot
     int x;          //Position x
     int y;          //Position y
     char dir;       //Direction (up, down, left, right)
@@ -57,19 +58,19 @@ typedef struct Robot{
     char **knownMap;//Map telle que connue du robot
 } Robot;
 
-typedef struct Map{
-    int width;
-    int height;
-    MapPoint start;
-    MapPoint arrival;
-    char **map;
+typedef struct Map{//Map
+    int width;          //Largeur de la map
+    int height;         //Hauteur de la map
+    MapPoint start;     //Point de départ
+    MapPoint arrival;   //Point d'arrivée
+    char **map;         //Tableau de char * contenant la map
 }Map;
 
 /* Fonctions utiles */
 char *strfield(char *string, char separator, int field);//Extrait un champ d'une chaine délimité par un séparateur
-void setTerminalColor(char *param); //Change la couleur du texte dans le terminal C'est zoli :)
-void wait(unsigned int millis);  //Attend.... encore un peu.... encoooore... la descrption arrivera... attends... wait(-1)....
-int waitInput(); //Attend qu'une touche soit pressée
-int randInt(int minVal, int maxVal);//Tire un nb aléatoire entre les bornes précisées
+void setTerminalColor(char *param);                     //Change la couleur du texte dans le terminal C'est zoli :)
+void wait(unsigned int millis);                         //Attend.... encore un peu.... encoooore... la descrption arrivera... attends... wait(-1)....
+int waitInput();                                        //Attend qu'une touche soit pressée
+int randInt(int minVal, int maxVal);                    //Tire un nb aléatoire entre les bornes précisées
 
 #endif //_USEFULFUNCTIONS_INC_
