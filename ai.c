@@ -1,5 +1,14 @@
 #include "ai.h"
 
+/*******************************************************************/
+/*createRobot(Map *map)                                             */
+/*Crée un nouveau robot.                                            */
+/*Paramétres :                                                      */
+/*  Map *map : une Map précédemment chargée depuis un fichier       */
+/*Retour :                                                          */
+/*  Robot *(void) : un Robot. Se référer à func.h pour la doc. sur  */
+/*                  le struct Robot                                 */
+/********************************************************************/
 Robot *createRobot(Map *map)
 {
     Robot *robot = malloc(sizeof(Robot));
@@ -131,9 +140,9 @@ int Bot_FollowWall(GUI_Component *window, Map *map, Robot *robot)//Robot stupide
             turn(robot, RIGHT, MOVE_RELATIVE);      //... ou pas, dans ce cas, encore à droite
         }
     }
-    else if ( robot->angle == 0 )                   //S'il n'y avait pas de mur, on continue tout droit
+    else if ( robot->angle == 0 )                   //Si le compteur de Pledge arrive à 0, on continue tout droit
     {
-        turn(robot, RIGHT, MOVE_RELATIVE);
+        //turn(robot, RIGHT, MOVE_RELATIVE);
     }
 
     target = getTarget(robot);
@@ -164,7 +173,7 @@ int ScanMap(GUI_Component *window, Map *map, Robot *robot, int dir)
 
     MapPoint *target = getTarget(robot);
 
-    if ( robot->knownMap[target->y][target->x] != '.' )//Vérifier si on est déja allé à ce point
+    if ( robot->knownMap[target->y][target->x] != '.' )//Vérifier si on est pas déja allé à ce point
     {
         Robot *OldRobot = malloc(sizeof(Robot));
         OldRobot->x = robot->x;

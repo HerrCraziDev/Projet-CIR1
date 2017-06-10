@@ -1,6 +1,6 @@
 #include "interface.h"
 
-GUI_Component *initGUI(Map *map)
+GUI_Component *initGUI(Map *map, int mode)
 {
     //Initialisation de la SDL
     if (SDL_Init(SDL_INIT_VIDEO) == -1)
@@ -9,8 +9,23 @@ GUI_Component *initGUI(Map *map)
         exit(EXIT_FAILURE);
     }
 
+    //Initialisation de la struct GUI_Component
+    GUI_Component *window = malloc(sizeof(GUI_Component));
+    window->mode = mode;
+
+    if (mode == MODE_ISOMETRIC)
+    {
+        window->width = (map->width/2 + map->height/2) * GUI_TILESIZE;
+        window->height = window->width;
+        window->outputOffset = (map->width/2) * GUI_TILESIZE;
+        //printf("Width : %d, height : %d\n", window->wid);
+    } else {
+        window->width = map->width*GUI_TILESIZE;
+        window->height =  map->height*GUI_TILESIZE;
+    }
+
     //Création d'une fenêtre
-    SDL_Surface *hWnd = OpenWindow(map->width*GUI_TILESIZE, map->height*GUI_TILESIZE, "Pathfinder Mk1.0", SDL_HWSURFACE | SDL_DOUBLEBUF);
+    SDL_Surface *hWnd = OpenWindow(window->width, window->height, "Pathfinder Mk1.0", SDL_HWSURFACE | SDL_DOUBLEBUF);
 
     //Initialisation du générateur pseudo aléatoire
     srand(time(NULL));
@@ -18,11 +33,8 @@ GUI_Component *initGUI(Map *map)
     //Couleur d'arriére plan
     SDL_FillRect(hWnd, NULL, 0xffffffff);
 
-    //Initialisation de la struct GUI_Component
-    GUI_Component *window = malloc(sizeof(GUI_Component));
     window->internal = hWnd;
-    window->width = map->width*GUI_TILESIZE;
-    window->height =  map->height*GUI_TILESIZE;
+
 
     return window;
 }
@@ -37,23 +49,30 @@ SDL_Surface *OpenWindow(int width,int height, char *title, int flags)
 
 void DrawRobot(GUI_Component *window, Robot *robot)
 {
-    DrawTile(window->internal, robot->x, robot->y, 'R');
+    DrawTile(window, robot->x, robot->y, 'R');
 }
 
 void ClearRobot(GUI_Component *window, Robot *robot)
 {
-    DrawTile(window->internal, robot->x, robot->y, '.');
+    DrawTile(window, robot->x, robot->y, '.');
 }
 
-void DrawTile(SDL_Surface *output, int x, int y, char type)
+void DrawTile(GUI_Component *output, int x, int y, char type)
 {
     //Création d'une surface temporaire pour l'affichage d'une tuile
     SDL_Surface *tile = SDL_CreateRGBSurface(0, GUI_TILESIZE, GUI_TILESIZE, 32, 0, 0, 0, 0);
 
     //Destination
     SDL_Rect rect_dest;
-    rect_dest.x = x*GUI_TILESIZE;
-    rect_dest.y = y*GUI_TILESIZE;
+
+    if ( output->mode )
+    {
+        rect_dest.x = (x*GUI_TILESIZE)/2 + (y*GUI_TILESIZE)/2;
+        rect_dest.y = (y*GUI_TILESIZE)/2 - (x*GUI_TILESIZE)/2 + output->outputOffset;
+    } else {
+        rect_dest.x = x*GUI_TILESIZE;
+        rect_dest.y = y*GUI_TILESIZE;
+    }
 
     //Couleur de la surface
     switch (type) {
@@ -77,7 +96,7 @@ void DrawTile(SDL_Surface *output, int x, int y, char type)
         break;
     }
     //Blit de la surface sur la sortie graphique (fenêtre)
-    SDL_BlitSurface(tile, NULL, output, &rect_dest);
+    SDL_BlitSurface(tile, NULL, output->internal, &rect_dest);
     //Destruction de la surface
     SDL_FreeSurface(tile);
 }
@@ -88,7 +107,7 @@ void DrawMap(GUI_Component *output, Map *map)
     {
         for (int x = 0 ; x < map->width ; x++)
         {
-            DrawTile(output->internal, x, y, map->map[y][x]);
+            DrawTile(output, x, y, map->map[y][x]);
         }
     }
 }
@@ -115,6 +134,8 @@ int ManageEvents(GUI_Component *window)
 
             case SDL_MOUSEBUTTONDOWN://Toggle du mode debug (n.imp.)
             debugMode = !debugMode;
+
+            wait(1000);
             break;
         }
     }

@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
 
     Robot *robot = createRobot(map);
 
-    GUI_Component *window = initGUI(map);
+    GUI_Component *window = initGUI(map,MODE_ISOMETRIC);
 
     robot->lockDir = 1;
 
