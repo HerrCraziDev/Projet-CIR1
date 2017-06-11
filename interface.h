@@ -30,7 +30,7 @@
 #define TX_ARRIVAL 4
 #define TX_VISITED 5
 
-#define TX_WALL_YOFFSET 8
+#define TX_WALL_YOFFSET 16
 
 typedef struct GUI_Component{//Composant graphique de base
     int width;              //Largeur

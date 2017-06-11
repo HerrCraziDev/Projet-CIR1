@@ -29,8 +29,6 @@
 #define MOVE_ABSOLUTE 0 //Mouvement absolu (uniquement en rotation, le robot ne se téléporte pas)
 #define MOVE_RELATIVE 1 //Mouvement relatif à la position/directin courante
 
-#define DELAY 50    //Délai entre deux étapes
-
 
 /* Fonctions de gestion de l' IA du robot */
 Robot *createRobot(Map *map);                       //Crée un nouveau Robot

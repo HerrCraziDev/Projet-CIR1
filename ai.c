@@ -94,10 +94,7 @@ void turn(Robot *robot, int dir, char mode)
             if ( dir==LEFT )
             {
                 robot->dir -= 1;
-                if (robot->dir < 0)
-                {
-                    robot->dir = 3;
-                }
+                robot->dir = (robot->dir < 0)? 3 : robot->dir;
                 robot->angle--;
             }
             else if (dir==RIGHT)
@@ -170,25 +167,22 @@ int Bot_FollowWall(GUI_Component *window, Map *map, Robot *robot)//Robot stupide
 
 int ScanMap(GUI_Component *window, Map *map, Robot *robot, int dir)
 {
-    if ( checkArrival(map, robot) ) return 1;//Si on est à l'arrivée, inutile d'aller faire des segfaults
+    if ( checkArrival(map, robot) ) return 1;           //Si on est à l'arrivée, inutile d'aller faire des segfaults
 
-    turn(robot, dir, MOVE_ABSOLUTE);//On tourne le robot dans la direction choisie
+    turn(robot, dir, MOVE_ABSOLUTE);                    //On tourne le robot dans la direction choisie
 
     MapPoint *target = getTarget(robot);
 
-    if ( robot->knownMap[target->y][target->x] != '.' )//Vérifier si on est pas déja allé à ce point
+    if ( robot->knownMap[target->y][target->x] != '.' ) //Vérifier si on est pas déja allé à ce point
     {
-        /*Robot *OldRobot = malloc(sizeof(Robot));
-        OldRobot->x = robot->x;
-        OldRobot->y = robot->y;*/
-
-        if ( moveFwd(map, robot, 1) )//Si on peut y avancer...
+        if ( moveFwd(map, robot, 1) )                   //Si on peut y avancer...
         {
             //Affichage du robot
-            //ClearRobot(window, OldRobot);
-            //DrawRobot(window, robot);
             DrawMap(window, map, robot);
             RenderGUI(window);
+
+            //Gestion des événements
+            ManageEvents(window);
 
             wait(DELAY/4);
 
@@ -200,26 +194,21 @@ int ScanMap(GUI_Component *window, Map *map, Robot *robot, int dir)
 
             //Retour au sens dans lequel il est arrivé sur cette case
             turn(robot, dir, MOVE_ABSOLUTE);
+
             //Demi tour
             turn(robot, RIGHT, MOVE_RELATIVE);
             turn(robot, RIGHT, MOVE_RELATIVE);
-            //Archivage de la position actuelle (pour l'effacer aprés)
-            //OldRobot->x = robot->x;
-            //OldRobot->y = robot->y;
+
             //Avancer sur la case d'avant
             moveFwd(map, robot, 1);
-        } else {
-            //Il y a un mur
         }
 
         //Affichage du robot
-        //ClearRobot(window, OldRobot);
-        //DrawRobot(window, robot);
         DrawMap(window, map, robot);
         RenderGUI(window);
 
-        //free(OldRobot);
-
+        //Gestion des événements
+        ManageEvents(window);
         wait(DELAY/4);
     }
     return 0;

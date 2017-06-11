@@ -37,6 +37,8 @@
 #define BK_WHITE "47"
 /*********************************************/
 
+#define DELAY 50    //Délai entre deux étapes
+
 //Fonctions utiles pour l'affichage sur terminal non graphique
 #define RestoreCursorPosition() printf("\033[u")
 #define SaveCursorPosition() printf("\033[s")

@@ -27,45 +27,37 @@ int main(int argc, char const *argv[])
 
     SaveCursorPosition();
 
-    Robot *robot = createRobot(map);
+    Robot *mrHandy = createRobot(map);
 
     GUI_Component *window = initGUI(map,MODE_ISOMETRIC);
 
-    robot->lockDir = 1;
+    mrHandy->lockDir = 1;
 
     /* Pathfinding et gestion graphique */
-    DrawMap(window, map, robot);
+    DrawMap(window, map, mrHandy);
     RenderGUI(window);
 
     do
     {
-        //Effacer le robot
-        //ClearRobot(window, robot);
-
         //Exécution d'une étape
-        Bot_FollowWall(window, map, robot);
+        Bot_FollowWall(window, map, mrHandy);
 
-        //Affichage du robot
-        //DrawRobot(window, robot);
-        DrawMap(window, map, robot);
+        //Affichage du mrHandy et de la map
+        DrawMap(window, map, mrHandy);
         RenderGUI(window);
 
         RestoreCursorPosition();
-        printf("\rKilométrage : %d\n", robot->steps);
+        printf("\rKilométrage : %d\n", mrHandy->steps);
 
         wait(DELAY);
 
     } while ( ManageEvents(window) );
 
-    //Trucs peu utiles mais jolis
-    // setTerminalColor(CL_RED);
-    // printf("FINI!!!!!\n\n\n\n");
-    // setTerminalColor(CL_RESET);
-
     RestoreCursorPosition();
     printf("\n");
 
-    FreeRobot(robot, map->height);
+    //Libération des ressources
+    FreeRobot(mrHandy, map->height);
     FreeMap(map);
     FreeGUI(window);
 

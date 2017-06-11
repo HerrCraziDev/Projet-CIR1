@@ -41,7 +41,7 @@ GUI_Component *initGUI(Map *map, int mode)
     }
 
     //Création d'une fenêtre
-    SDL_Surface *hWnd = OpenWindow(window->width, window->height, "Pathfinder Mk1.0", SDL_HWSURFACE | SDL_DOUBLEBUF);
+    SDL_Surface *hWnd = OpenWindow(window->width, window->height, "Robo-Labour-O-matic' 2000 Mk1.0", SDL_HWSURFACE | SDL_DOUBLEBUF);
 
     //Initialisation du générateur pseudo aléatoire
     srand(time(NULL));
@@ -208,33 +208,43 @@ void RenderGUI(GUI_Component *output)
 
 int ManageEvents(GUI_Component *window)
 {
-    static int debugMode = 0;
+    static int pause = 0;
 
     SDL_Event event;
 
-    //Gestion des événements
-    while (SDL_PollEvent(&event))
-    {
-        switch (event.type)
+    //Boucle de pause
+    do {
+
+        //Gestion des événements
+        while (SDL_PollEvent(&event))
         {
-            case SDL_QUIT:
-            return 0;
+            switch (event.type)
+            {
+                case SDL_QUIT://Quitter
+                return 0;
 
-            case SDL_MOUSEBUTTONDOWN://Toggle du mode debug (n.imp.)
-            debugMode = !debugMode;
-
-            wait(1000);
-            break;
+                case SDL_MOUSEBUTTONDOWN://Pause
+                pause = !pause;
+                break;
+            }
         }
-    }
 
+        if (pause) wait(DELAY); //Ne pas consommer trop de CPU en pause
+
+    } while (pause);
 
     return 1;
 }
 
 void FreeGUI(GUI_Component *window)
 {
-    // free(window->internal);
-    // free(window);
+    //Libération des textures
+    for (int i = 0 ; i < GUI_NB_TEXTURES ; i++)
+    {
+        SDL_FreeSurface(window->textures[i]);
+    }
+    //Destruction de l'environnement graphique
     SDL_Quit();
+
+    free(window);
 }
