@@ -34,19 +34,20 @@ int main(int argc, char const *argv[])
     robot->lockDir = 1;
 
     /* Pathfinding et gestion graphique */
-    DrawMap(window, map);
+    DrawMap(window, map, robot);
     RenderGUI(window);
 
     do
     {
         //Effacer le robot
-        ClearRobot(window, robot);
+        //ClearRobot(window, robot);
 
         //Exécution d'une étape
         Bot_FollowWall(window, map, robot);
 
         //Affichage du robot
-        DrawRobot(window, robot);
+        //DrawRobot(window, robot);
+        DrawMap(window, map, robot);
         RenderGUI(window);
 
         RestoreCursorPosition();

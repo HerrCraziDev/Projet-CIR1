@@ -62,6 +62,9 @@ int moveFwd(Map *map, Robot *robot, int dist)
         robot->y = y;
         robot->steps += dist;
 
+        //Mise à jour de la map du robot avec sa propre position
+        robot->knownMap[robot->y][robot->x] = 'R';
+
         //Afficher le robot (terminal)
         MoveCursorTo(robot->x, robot->y);
         setTerminalColor(BK_RED);
@@ -142,7 +145,7 @@ int Bot_FollowWall(GUI_Component *window, Map *map, Robot *robot)//Robot stupide
     }
     else if ( robot->angle == 0 )                   //Si le compteur de Pledge arrive à 0, on continue tout droit
     {
-        //turn(robot, RIGHT, MOVE_RELATIVE);
+        turn(robot, RIGHT, MOVE_RELATIVE);
     }
 
     target = getTarget(robot);
@@ -175,15 +178,16 @@ int ScanMap(GUI_Component *window, Map *map, Robot *robot, int dir)
 
     if ( robot->knownMap[target->y][target->x] != '.' )//Vérifier si on est pas déja allé à ce point
     {
-        Robot *OldRobot = malloc(sizeof(Robot));
+        /*Robot *OldRobot = malloc(sizeof(Robot));
         OldRobot->x = robot->x;
-        OldRobot->y = robot->y;
+        OldRobot->y = robot->y;*/
 
         if ( moveFwd(map, robot, 1) )//Si on peut y avancer...
         {
             //Affichage du robot
-            ClearRobot(window, OldRobot);
-            DrawRobot(window, robot);
+            //ClearRobot(window, OldRobot);
+            //DrawRobot(window, robot);
+            DrawMap(window, map, robot);
             RenderGUI(window);
 
             wait(DELAY/4);
@@ -200,8 +204,8 @@ int ScanMap(GUI_Component *window, Map *map, Robot *robot, int dir)
             turn(robot, RIGHT, MOVE_RELATIVE);
             turn(robot, RIGHT, MOVE_RELATIVE);
             //Archivage de la position actuelle (pour l'effacer aprés)
-            OldRobot->x = robot->x;
-            OldRobot->y = robot->y;
+            //OldRobot->x = robot->x;
+            //OldRobot->y = robot->y;
             //Avancer sur la case d'avant
             moveFwd(map, robot, 1);
         } else {
@@ -209,11 +213,12 @@ int ScanMap(GUI_Component *window, Map *map, Robot *robot, int dir)
         }
 
         //Affichage du robot
-        ClearRobot(window, OldRobot);
-        DrawRobot(window, robot);
+        //ClearRobot(window, OldRobot);
+        //DrawRobot(window, robot);
+        DrawMap(window, map, robot);
         RenderGUI(window);
 
-        free(OldRobot);
+        //free(OldRobot);
 
         wait(DELAY/4);
     }
