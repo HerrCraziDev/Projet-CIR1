@@ -34,6 +34,15 @@ Robot *createRobot(Map *map)
     return robot;
 }
 
+/************************************************************************/
+/* int moveFwd(Map *map, Robot *robot, int dist)                        */
+/*Tente un déplacement du robot vers l'avant. Si un mur est présent, le */
+/*déplacement n'est pas réalisé. Le robot marque son déplacement d'un   */
+/*marque dans sa map interne.                                           */
+/*Paramétres : Map * map : une Map représentant le labyrinthe           */
+/*             Robot *robot : un Robot                                  */
+/*Retour : (booléen) true si le mouvement a été effectué, false sinon   */
+/************************************************************************/
 int moveFwd(Map *map, Robot *robot, int dist)
 {
     MapPoint *target = getTarget(robot);
@@ -129,7 +138,11 @@ int Bot_FollowWall(GUI_Component *window, Map *map, Robot *robot)//Robot stupide
     printf("\nDir=%d (lock:%d), angle=%d, seeking (%c), pos=(%d,%d), seek=(%d,%d)",robot->dir,robot->lockDir, robot->angle, trgt , robot->x, robot->y, target->x, target->y);
 
 
-    if ( checkArrival(map, robot) ) return 0;       //Gagné !
+    if ( checkArrival(map, robot) )       //Gagné !
+    {
+        //DrawText(window, window->font, window->width/2, window->height/2, "Sortie trouvée",TXT_CENTERED);
+        return 0;
+    }
 
     if ( !moveFwd(map, robot, 1) )                  //S'il y a un mur devant
     {
@@ -156,6 +169,7 @@ int Bot_FollowWall(GUI_Component *window, Map *map, Robot *robot)//Robot stupide
         printf("Recursive Pathfinder @(%d,%d) w. %d open cases\n", robot->x, robot->y, countNearestUnvisitedCases(robot));
 
         ScanMap(window, map, robot, LEFT);
+        turn(robot, RIGHT, MOVE_ABSOLUTE); //On replace le robot dans un sens où il peut reprendre l'algo. de Pledge
     }
 
     setTerminalColor(CL_RESET);
@@ -198,6 +212,7 @@ int ScanMap(GUI_Component *window, Map *map, Robot *robot, int dir)
             //Demi tour
             turn(robot, RIGHT, MOVE_RELATIVE);
             turn(robot, RIGHT, MOVE_RELATIVE);
+            robot->angle -= 2;
 
             //Avancer sur la case d'avant
             moveFwd(map, robot, 1);

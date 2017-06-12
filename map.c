@@ -56,6 +56,22 @@ Map *LoadMap(const char *file)
         }
     }
 
+    //Vérification de l'intégrité de la map (il ne doit pas rester de données non lues)
+    if ( fgets(line, i++, fp) )
+    {
+        setTerminalColor(CL_RED);
+        printf("Erreur : La map semble corrompue ou inexacte. Les informations de taille peuvent être erronnées. Utiliser cette map risque de provoquer un segfault méchant.\nContinuer quand même (vous êtes prévenu) ? y/(n) : ");
+        readString(line,3);
+
+        if(line[0]!='y')
+        {
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    //Fermeture du fichier
+    fclose(fp);
+    
     out->width = width;
     out->height = height;
     out->map = map;

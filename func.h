@@ -73,6 +73,7 @@ char *strfield(char *string, char separator, int field);//Extrait un champ d'une
 void setTerminalColor(char *param);                     //Change la couleur du texte dans le terminal C'est zoli :)
 void wait(unsigned int millis);                         //Attend.... encore un peu.... encoooore... la descrption arrivera... attends... wait(-1)....
 int waitInput();                                        //Attend qu'une touche soit pressée
+char *readString(char *Out,int MaxLen); //Attend la saisie d'une ligne et retire l'\n de fin
 int randInt(int minVal, int maxVal);                    //Tire un nb aléatoire entre les bornes précisées
 
 #endif //_USEFULFUNCTIONS_INC_

@@ -9,6 +9,7 @@ GUI_Component *initGUI(Map *map, int mode)
         exit(EXIT_FAILURE);
     }
 
+
     //Initialisation de la struct GUI_Component
     GUI_Component *window = malloc(sizeof(GUI_Component));
     window->mode = mode;
@@ -16,8 +17,8 @@ GUI_Component *initGUI(Map *map, int mode)
     if (mode == MODE_ISOMETRIC)
     {
         //Calcul de la hauteur de la fenêtre et de la largeur (identiques, c'est un carré)
-        window->width = (map->width/2 + map->height/2) * GUI_TILESIZE;
-        window->height = window->width + GUI_TILESIZE;
+        window->width = (map->width/2 + map->height/2) * GUI_TILESIZE +10;
+        window->height = window->width + GUI_TILESIZE +10;
         window->outputOffset = (map->width/2) * GUI_TILESIZE;
 
         //Chargement des textures
@@ -40,18 +41,39 @@ GUI_Component *initGUI(Map *map, int mode)
         window->height =  map->height*GUI_TILESIZE;
     }
 
+
     //Création d'une fenêtre
     SDL_Surface *hWnd = OpenWindow(window->width, window->height, "Robo-Labour-O-matic' 2000 Mk1.0", SDL_HWSURFACE | SDL_DOUBLEBUF);
 
-    //Initialisation du générateur pseudo aléatoire
-    srand(time(NULL));
-
     //Couleur d'arriére plan
-    SDL_FillRect(hWnd, NULL, 0x0);
+    SDL_FillRect(hWnd, NULL, 0x11111100);
 
     window->internal = hWnd;
 
 
+    //Initialisation du générateur pseudo aléatoire
+    srand(time(NULL));
+
+
+    //Chargement d'une police et affichage
+    TTF_Init();
+    window->font = TTF_OpenFont("ressources/terminal.ttf", 25);    //Fonte par défaut du jeu
+    TTF_Font *title = TTF_OpenFont("ressources/minecraft.ttf", 42); //spécial titre
+
+    DrawText(window, title, window->width/2, window->height/2, "Robo-Labour-O-matic 2000", TXT_CENTERED);
+    DrawText(window, window->font, window->width/2, (window->height/2) +50, "Loading...", TXT_CENTERED);
+
+    TTF_CloseFont(title);
+    SDL_Flip(window->internal);
+
+
+    //Initialisation de l'environnement audio
+    Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024);
+    Mix_AllocateChannels(2);
+
+    window->music = Mix_LoadWAV("ressources/soundtrack.ogg");
+
+    Mix_PlayChannel(-1, window->music, 0);
     return window;
 }
 
@@ -61,6 +83,28 @@ SDL_Surface *OpenWindow(int width,int height, char *title, int flags)
     SDL_Surface *hWnd = SDL_SetVideoMode(width,height,32,flags);
     SDL_WM_SetCaption(title,NULL);
     return hWnd;
+}
+
+void DrawText(GUI_Component *window, TTF_Font *font, int x, int y, char *message, int mode)
+{
+    SDL_Color color = {255,255,255};
+
+    SDL_Surface *text = TTF_RenderText_Blended(font, message, color);
+
+    SDL_Rect dest;
+    if (mode==TXT_DEFAULT)
+    {
+        dest.x = x;
+        dest.y = y;
+    } else {
+        dest.x = x - text->w/2;
+        dest.y = y - text->h/2;
+    }
+
+    //Affichage du message de chargement
+    SDL_BlitSurface(text, NULL, window->internal, &dest);
+
+    SDL_FreeSurface(text);
 }
 
 void DrawRobot(GUI_Component *window, Robot *robot)
@@ -87,10 +131,12 @@ void DrawIsometricTile(GUI_Component *output, int x, int y, char type)
 {
     SDL_Surface *tile = NULL;
 
+    //Transformation des coordonnées cartésiennes en coordonnées isométriques
     SDL_Rect rect_dest;
     rect_dest.x = (x*GUI_TILESIZE)/2 + (y*GUI_TILESIZE)/2;
     rect_dest.y = (y*GUI_TILESIZE)/2 - (x*GUI_TILESIZE)/2 + output->outputOffset;
 
+    //Sélection de la texture adaptée
     switch (type)
     {
         case 'x':
@@ -163,7 +209,12 @@ void DrawTile(GUI_Component *output, int x, int y, char type)
 
 void DrawMap(GUI_Component *output, Map *map, Robot *robot)
 {
+    //Effacement
+    SDL_FillRect(output->internal, NULL, 0x0);
+
     int x, y, x_dep, y_dep;
+
+    //Affichage des tiles en commençant en haut à droite, puis jusqu'à la diagonale en biais
     for ( x_dep = map->width ; x_dep >= 0 ; x_dep--)
     {
         for ( x = x_dep, y = 0 ; (x<map->width && y<map->height) ; x++, y++)
@@ -178,9 +229,11 @@ void DrawMap(GUI_Component *output, Map *map, Robot *robot)
                 }
             } else {
                 DrawTile(output, x, y, map->map[y][x]);
+                DrawTile(output, robot->x, robot->y, 'R');
             }
         }
     }
+    //Affichage de la diagonale au coin inférieur gauche
     for ( y_dep = 0 ; y_dep < map->height ; y_dep++)
     {
         for ( x = 0, y = y_dep ; (x<map->width && y<map->height) ; x++, y++)
@@ -195,6 +248,7 @@ void DrawMap(GUI_Component *output, Map *map, Robot *robot)
                 }
             } else {
                 DrawTile(output, x, y, map->map[y][x]);
+                DrawTile(output, robot->x, robot->y, 'R');
             }
         }
     }
@@ -243,6 +297,15 @@ void FreeGUI(GUI_Component *window)
     {
         SDL_FreeSurface(window->textures[i]);
     }
+
+    //Libération de la musique et des canaux virtuels
+    Mix_FreeChunk(window->music);
+    Mix_CloseAudio();
+
+    //Fermeture du systéme d'affichage texte
+    TTF_CloseFont(window->font);
+    TTF_Quit();
+
     //Destruction de l'environnement graphique
     SDL_Quit();
 

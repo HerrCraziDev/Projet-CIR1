@@ -1,14 +1,13 @@
-12:18
+19:12
 xxxxxxxxxxxxxxxxxxx
-xD                x
 x                 x
 x                 x
 x                 x
-xxxxxxxx     xxxxxx
+x        D        x
+xxxx     xxxxxxxxxx
 x                 x
 x                 x
-xxxxxxxxxxxxxx    x
-xxxxx             x
-xxxxx    xxxxxxxxxx
+x                 x
+x                 x
 x                Sx
 xxxxxxxxxxxxxxxxxxx

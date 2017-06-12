@@ -1,5 +1,5 @@
 CFLAGS= -g
-LFLAGS= -lSDL
+LFLAGS= -lSDL -lSDL_mixer -lSDL_ttf
 
 robot.app: main.o ai.o interface.o map.o func.o
 	gcc main.o ai.o func.o map.o interface.o $(LFLAGS) -o robot.app

@@ -51,6 +51,13 @@ int waitInput() //Attend qu'une touche soit pressée
     return key;
 }
 
+char *readString(char *Out,int MaxLen) //Attend la saisie d'une ligne et retire l'\n de fin
+{
+	fgets(Out,MaxLen,stdin);
+	Out[strlen(Out)-1] = '\0';
+	return Out;
+}
+
 int randInt(int minVal, int maxVal)
 {
     return (rand() % (maxVal+1 - minVal)) + minVal;
